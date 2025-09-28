@@ -1,32 +1,27 @@
 import 'package:flutter/material.dart';
-import '../models/product.dart';
+import '../services/cart_service.dart';
 
 class CartScreen extends StatelessWidget {
-  final List<Product> cartItems;
-
-  CartScreen({required this.cartItems});
-
-  double calculateTotal() {
-    double subtotal = cartItems.fold(0, (sum, item) => sum + item.price);
-    double tax = cartItems.fold(0, (sum, item) => sum + item.tax);
-    double discount = subtotal * 0.1;
-    return subtotal + tax - discount;
-  }
-
   @override
   Widget build(BuildContext context) {
-    double total = calculateTotal();
+    final items = CartService.items;
+
     return Scaffold(
-      appBar: AppBar(title: Text('Receipt')),
-      body: Column(
-        children: [
-          ...cartItems.map((item) => ListTile(
-            title: Text(item.name),
-            subtitle: Text('Price: ${item.price} Tax: ${item.tax}'),
-          )),
-          Divider(),
-          Text('Total: $total'),
-        ],
+      appBar: AppBar(title: Text('Cart')),
+      body: ListView(
+        children: items.map((item) {
+          return ListTile(
+            title: Text('${item.product.name} x${item.quantity}'),
+            subtitle: Text('Total: ${item.total} Tax: ${item.tax}'),
+          );
+        }).toList(),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text(
+          'Grand Total: ${CartService.grandTotal}',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
